@@ -24,58 +24,54 @@ import com.example.android.dagger.R
 import com.example.android.dagger.main.MainActivity
 import com.example.android.dagger.registration.enterdetails.EnterDetailsFragment
 import com.example.android.dagger.registration.termsandconditions.TermsAndConditionsFragment
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class RegistrationActivity : AppCompatActivity() {
 
-    // Stores an instance of RegistrationComponent so that its Fragments can access it
-    lateinit var registrationComponent: RegistrationComponent
+	// @Inject annotated fields will be provided by Dagger
+	@Inject
+	lateinit var registrationViewModel: RegistrationViewModel
 
-    // @Inject annotated fields will be provided by Dagger
-    @Inject
-    lateinit var registrationViewModel: RegistrationViewModel
+	override fun onCreate(savedInstanceState: Bundle?) {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		setContentView(R.layout.activity_registration)
 
-        // Creates an instance of Registration component by grabbing the factory from the app graph
-        registrationComponent = (application as MyApplication).appComponent
-            .registrationComponent().create()
+		supportFragmentManager.beginTransaction()
+			.add(R.id.fragment_holder, EnterDetailsFragment())
+			.commit()
+	}
 
-        // Injects this activity to the just created Registration component
-        registrationComponent.inject(this)
+	/**
+	 * Callback from EnterDetailsFragment when username and password has been entered
+	 */
+	fun onDetailsEntered() {
+		supportFragmentManager.beginTransaction()
+			.replace(R.id.fragment_holder, TermsAndConditionsFragment())
+			.addToBackStack(TermsAndConditionsFragment::class.java.simpleName)
+			.commit()
+	}
 
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_registration)
+	/**
+	 * Callback from T&CsFragment when TCs have been accepted
+	 */
+	fun onTermsAndConditionsAccepted() {
+		registrationViewModel.registerUser()
+		startActivity(Intent(this, MainActivity::class.java))
+		finish()
+	}
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_holder, EnterDetailsFragment())
-            .commit()
-    }
-
-    /**
-     * Callback from EnterDetailsFragment when username and password has been entered
-     */
-    fun onDetailsEntered() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_holder, TermsAndConditionsFragment())
-            .addToBackStack(TermsAndConditionsFragment::class.java.simpleName)
-            .commit()
-    }
-
-    /**
-     * Callback from T&CsFragment when TCs have been accepted
-     */
-    fun onTermsAndConditionsAccepted() {
-        registrationViewModel.registerUser()
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
-    }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
-        }
-    }
+	override fun onBackPressed() {
+		if (supportFragmentManager.backStackEntryCount > 0) {
+			supportFragmentManager.popBackStack()
+		} else {
+			super.onBackPressed()
+		}
+	}
 }
