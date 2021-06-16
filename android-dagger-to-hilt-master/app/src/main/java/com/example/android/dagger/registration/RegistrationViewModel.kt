@@ -19,7 +19,6 @@ package com.example.android.dagger.registration
 import androidx.lifecycle.ViewModel
 import com.example.android.dagger.user.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 /**

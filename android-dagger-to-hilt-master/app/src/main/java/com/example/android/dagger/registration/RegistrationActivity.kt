@@ -18,6 +18,7 @@ package com.example.android.dagger.registration
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android.dagger.MyApplication
 import com.example.android.dagger.R
@@ -35,8 +36,7 @@ import javax.inject.Inject
 class RegistrationActivity : AppCompatActivity() {
 
 	// @Inject annotated fields will be provided by Dagger
-	@Inject
-	lateinit var registrationViewModel: RegistrationViewModel
+	private val registrationViewModel: RegistrationViewModel by viewModels()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 
